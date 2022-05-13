@@ -54,6 +54,8 @@ tls*)
     tshark -r $PCAP_FILE_PATH -Y 'ssl.handshake.type==2' 2>/dev/null | wc -l
     echo -e -n "Server kex:\t     "
     tshark -r $PCAP_FILE_PATH -Y 'ssl.handshake.type==12' 2>/dev/null | wc -l
+    echo -e -n "Unique public keys:  "
+    tshark -r $PCAP_FILE_PATH -Y 'tls.handshake.type==12' -Tfields -e 'tls.handshake.ys' 2>/dev/null | sort -u | wc -l
     ;;
 ssh*)
     SERVER_ADDRESS=`tshark -d tcp.port==1-65535,ssh -2 -R 'ssh.message_code==30 or ssh.message_code==32' -Tfields -e ip.dst -r $PCAP_FILE_PATH | head -1`
@@ -70,6 +72,8 @@ ssh*)
     tshark -d tcp.port==1-65535,ssh -r $PCAP_FILE_PATH -Y 'ssh.message_code==30 or ssh.message_code==32' 2>/dev/null | wc -l
     echo -e -n "KEX/GEX reply:\t     "
     tshark -d tcp.port==1-65535,ssh -r $PCAP_FILE_PATH -Y 'ssh.message_code==31 or ssh.message_code==33' 2>/dev/null | wc -l
+    echo -e -n "Unique public keys:  "
+    tshark -r $PCAP_FILE_PATH -Y 'ssh.message_code==31 or ssh.message_code==33' -Tfields -e 'ssh.dh.f' 2>/dev/null | sort -u | wc -l
     ;;
 ikev2*)
     SERVER_ADDRESS=`tshark -d udp.port==1-65535,isakmp -2 -R 'isakmp.nextpayload==33' -Tfields -e ip.dst -r $PCAP_FILE_PATH | head -1`
