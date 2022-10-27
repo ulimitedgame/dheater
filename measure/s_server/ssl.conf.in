@@ -1,0 +1,12 @@
+server.modules += ( "mod_MOD_SSL" )
+
+ssl.privkey = "/etc/lighttpd/server.key"
+ssl.pemfile = "/etc/lighttpd/server.crt"
+ssl.dh-file = "/etc/lighttpd/dhparam.pem"
+
+ssl.cipher-list = "ALL"
+
+$SERVER["socket"] == "0.0.0.0:443" {
+        ssl.engine  = "enable"
+}
+include_shell "/usr/share/lighttpd/use-ipv6.pl 443"
